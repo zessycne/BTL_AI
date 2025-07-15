@@ -1,16 +1,23 @@
 import tkinter as tk
 from tkinter import scrolledtext, messagebox
-from du_doan import tai_mo_hinh_va_vectorizer, du_doan_tin_nhan
+from mo_hinh import tai_mo_hinh, clean_text_list, batch_encode
 
-# Tải mô hình và vectorizer
-mo_hinh, vectorizer = tai_mo_hinh_va_vectorizer('mo_hinh_spam.pkl', 'vectorizer_spam.pkl')
+def du_doan_tin_nhan(mo_hinh, embedder, tin_nhan: str):
+    """Dự đoán một email là spam hay không spam."""
+    tin_nhan_clean = clean_text_list([tin_nhan])
+    tin_nhan_emb = batch_encode(embedder, tin_nhan_clean)
+    du_doan = mo_hinh.predict(tin_nhan_emb)[0]
+    return "Spam" if du_doan == 1 else "Không spam"
+
+mo_hinh, embedder = tai_mo_hinh('mo_hinh_spam.pkl', 'sentence_model.txt')
 
 def du_doan_email():
+    """Lấy nội dung email từ giao diện, dự đoán và hiển thị kết quả."""
     email = text_email.get('1.0', tk.END).strip()
     if not email:
         messagebox.showwarning('Cảnh báo', 'Vui lòng nhập nội dung email!')
         return
-    ket_qua = du_doan_tin_nhan(mo_hinh, vectorizer, email)
+    ket_qua = du_doan_tin_nhan(mo_hinh, embedder, email)
     label_ket_qua.config(text=f'Kết quả: {ket_qua}')
 
 root = tk.Tk()

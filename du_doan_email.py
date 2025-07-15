@@ -1,27 +1,21 @@
-from du_doan import tai_mo_hinh_va_vectorizer, du_doan_tin_nhan
-import os
+from mo_hinh import tai_mo_hinh, clean_text_list, batch_encode
 
-if __name__ == '__main__':
-    mo_hinh, vectorizer = tai_mo_hinh_va_vectorizer('mo_hinh_spam.pkl', 'vectorizer_spam.pkl')
-    print('Nhập nội dung email cần kiểm tra:')
-    print('- Nhập tên file để đọc từ file (ví dụ: email.txt)')
-    print('- Hoặc nhập nhiều dòng, kết thúc bằng một dòng chỉ chứa END')
-    print('- Hoặc nhập một dòng email rồi nhấn Enter')
-    du_lieu = input()
-    if os.path.isfile(du_lieu):
-        with open(du_lieu, 'r', encoding='utf-8') as f:
-            email = f.read()
-        print('Đã đọc nội dung từ file:', du_lieu)
-    else:
-        if du_lieu.strip() == 'END':
-            email = ''
-        else:
-            lines = [du_lieu]
-            while True:
-                line = input()
-                if line.strip() == 'END':
-                    break
-                lines.append(line)
-            email = '\n'.join(lines)
-    ket_qua = du_doan_tin_nhan(mo_hinh, vectorizer, email)
-    print(f'Kết quả: {ket_qua}') 
+def du_doan_tin_nhan(mo_hinh, embedder, tin_nhan: str):
+    """Dự đoán một email là spam hay không spam."""
+    tin_nhan_clean = clean_text_list([tin_nhan])
+    tin_nhan_emb = batch_encode(embedder, tin_nhan_clean)
+    du_doan = mo_hinh.predict(tin_nhan_emb)[0]
+    return "Spam" if du_doan == 1 else "Không spam"
+
+if __name__ == "__main__":
+    mo_hinh, embedder = tai_mo_hinh('mo_hinh_spam.pkl', 'sentence_model.txt')
+    print("Nhập nội dung email cần kiểm tra:")
+    lines = []
+    while True:
+        line = input()
+        if line.strip() == "END":
+            break
+        lines.append(line)
+    email = "\n".join(lines)
+    ket_qua = du_doan_tin_nhan(mo_hinh, embedder, email)
+    print("Kết quả dự đoán:", ket_qua) 
