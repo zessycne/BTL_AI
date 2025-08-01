@@ -94,4 +94,5 @@ def train_and_evaluate(duong_dan_file: str, duong_dan_mo_hinh: str, duong_dan_em
     print(f'Đã lưu mô hình vào {duong_dan_mo_hinh} và tên model SentenceTransformer vào {duong_dan_embedder}')
 
 if __name__ == '__main__':
+    print("=== Huấn luyện mô hình với SentenceTransformer ===")
     train_and_evaluate('spam.csv', 'mo_hinh_spam.pkl', 'sentence_model.txt')
