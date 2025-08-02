@@ -2,19 +2,19 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, accuracy_score
-from tien_xu_ly import doc_va_tien_xu_ly_du_lieu
+from tien_xu_ly import doc_va_tien_xu_ly_du_lieu, clean_text_list
 import joblib
 from sentence_transformers import SentenceTransformer
 
 MODEL_NAME = 'paraphrase-multilingual-MiniLM-L12-v2'
 
+# ============================================================================
+# 1. CÁC HÀM TIỆN ÍCH (UTILITY FUNCTIONS)
+# ============================================================================
+
 def encode_sentences(model, sentences):
     """Chuyển list câu thành embedding numpy array bằng SentenceTransformer."""
     return np.array(model.encode(sentences, show_progress_bar=False))
-
-def clean_text_list(series):
-    """Làm sạch dữ liệu đầu vào: loại bỏ None/NaN, chuyển thành chuỗi, thay thế chuỗi rỗng."""
-    return [str(s) if pd.notnull(s) and str(s).strip() != "" else "[EMPTY]" for s in series]
 
 def batch_encode(model, texts, batch_size=128):
     """Encode embedding theo batch nhỏ để tránh tràn bộ nhớ."""
@@ -24,6 +24,16 @@ def batch_encode(model, texts, batch_size=128):
         emb = model.encode(batch, show_progress_bar=False)
         embeddings.append(emb)
     return np.vstack(embeddings)
+
+# ============================================================================
+# 2. CÁC HÀM HUẤN LUYỆN MÔ HÌNH
+# ============================================================================
+
+def huan_luyen_mo_hinh(X_train_emb, y_train):
+    """Huấn luyện mô hình Logistic Regression với embedding."""
+    mo_hinh = LogisticRegression(max_iter=1000)
+    mo_hinh.fit(X_train_emb, y_train)
+    return mo_hinh
 
 def xay_dung_va_danh_gia_mo_hinh(duong_dan_file: str):
     """Huấn luyện và đánh giá mô hình phân loại thư rác với SentenceTransformer."""
@@ -43,12 +53,31 @@ def xay_dung_va_danh_gia_mo_hinh(duong_dan_file: str):
     print(bao_cao)
     return mo_hinh, embedder
 
+# ============================================================================
+# 3. CÁC HÀM ĐÁNH GIÁ MÔ HÌNH
+# ============================================================================
+
+def danh_gia_mo_hinh(mo_hinh, X_test_emb, y_test):
+    """Đánh giá mô hình trên tập test."""
+    du_doan = mo_hinh.predict(X_test_emb)
+    do_chinh_xac = accuracy_score(y_test, du_doan)
+    bao_cao = classification_report(y_test, du_doan, target_names=['Không phải rác', 'Thư rác'])
+    return do_chinh_xac, bao_cao
+
+# ============================================================================
+# 4. CÁC HÀM DỰ ĐOÁN
+# ============================================================================
+
 def du_doan_tin_nhan(mo_hinh, embedder, tin_nhan: str):
     """Dự đoán một tin nhắn/email là spam hay không spam."""
     tin_nhan_clean = clean_text_list([tin_nhan])
     tin_nhan_emb = batch_encode(embedder, tin_nhan_clean)
     du_doan = mo_hinh.predict(tin_nhan_emb)[0]
     return "Spam" if du_doan == 1 else "Không spam"
+
+# ============================================================================
+# 5. CÁC HÀM LƯU VÀ TẢI MÔ HÌNH
+# ============================================================================
 
 def luu_mo_hinh_va_embedder(mo_hinh, duong_dan_mo_hinh: str, duong_dan_embedder: str):
     """Lưu mô hình và tên model embedding vào file."""
@@ -64,18 +93,9 @@ def tai_mo_hinh(duong_dan_mo_hinh: str, duong_dan_embedder: str):
     embedder = SentenceTransformer(model_name)
     return mo_hinh, embedder
 
-def huan_luyen_mo_hinh(X_train_emb, y_train):
-    """Huấn luyện mô hình Logistic Regression với embedding."""
-    mo_hinh = LogisticRegression(max_iter=1000)
-    mo_hinh.fit(X_train_emb, y_train)
-    return mo_hinh
-
-def danh_gia_mo_hinh(mo_hinh, X_test_emb, y_test):
-    """Đánh giá mô hình trên tập test."""
-    du_doan = mo_hinh.predict(X_test_emb)
-    do_chinh_xac = accuracy_score(y_test, du_doan)
-    bao_cao = classification_report(y_test, du_doan, target_names=['Không phải rác', 'Thư rác'])
-    return do_chinh_xac, bao_cao
+# ============================================================================
+# 6. PIPELINE CHÍNH
+# ============================================================================
 
 def train_and_evaluate(duong_dan_file: str, duong_dan_mo_hinh: str, duong_dan_embedder: str):
     """Pipeline: train, test, lưu mô hình và tên model embedding."""
@@ -92,6 +112,10 @@ def train_and_evaluate(duong_dan_file: str, duong_dan_mo_hinh: str, duong_dan_em
     print(bao_cao)
     luu_mo_hinh_va_embedder(mo_hinh, duong_dan_mo_hinh, duong_dan_embedder)
     print(f'Đã lưu mô hình vào {duong_dan_mo_hinh} và tên model SentenceTransformer vào {duong_dan_embedder}')
+
+# ============================================================================
+# 7. MAIN EXECUTION
+# ============================================================================
 
 if __name__ == '__main__':
     print("=== Huấn luyện mô hình với SentenceTransformer ===")

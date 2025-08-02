@@ -1,4 +1,5 @@
-from mo_hinh import tai_mo_hinh, clean_text_list, batch_encode
+from mo_hinh import tai_mo_hinh, batch_encode
+from tien_xu_ly import clean_text_list
 
 def du_doan_tin_nhan(mo_hinh, embedder, tin_nhan: str):
     """Dự đoán một email là spam hay không spam."""
