@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 📧 Hệ Thống Nhận Diện Email Spam
 
 Dự án Machine Learning sử dụng **SentenceTransformer** và **Logistic Regression** để phân loại email spam vs ham.
@@ -157,3 +158,7 @@ Dự án này được tạo cho mục đích học tập và nghiên cứu.
 ---
 
 **🎉 Chúc bạn thành công với dự án Machine Learning!** 
+=======
+
+https://raw.githubusercontent.com/zessycne/BTL_AI/main/spam.csv
+>>>>>>> ba4e53c00ef866c17ab816a04cbb1d1cf6c1aab4
