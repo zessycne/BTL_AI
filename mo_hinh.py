@@ -12,10 +12,6 @@ MODEL_NAME = 'paraphrase-multilingual-MiniLM-L12-v2'
 # 1. CÁC HÀM TIỆN ÍCH (UTILITY FUNCTIONS)
 # ============================================================================
 
-def encode_sentences(model, sentences):
-    """Chuyển list câu thành embedding numpy array bằng SentenceTransformer."""
-    return np.array(model.encode(sentences, show_progress_bar=False))
-
 def batch_encode(model, texts, batch_size=128):
     """Encode embedding theo batch nhỏ để tránh tràn bộ nhớ."""
     embeddings = []
@@ -34,24 +30,6 @@ def huan_luyen_mo_hinh(X_train_emb, y_train):
     mo_hinh = LogisticRegression(max_iter=1000)
     mo_hinh.fit(X_train_emb, y_train)
     return mo_hinh
-
-def xay_dung_va_danh_gia_mo_hinh(duong_dan_file: str):
-    """Huấn luyện và đánh giá mô hình phân loại thư rác với SentenceTransformer."""
-    X_train, X_test, y_train, y_test = doc_va_tien_xu_ly_du_lieu(duong_dan_file)
-    embedder = SentenceTransformer(MODEL_NAME)
-    X_train_clean = clean_text_list(X_train)
-    X_test_clean = clean_text_list(X_test)
-    X_train_emb = batch_encode(embedder, X_train_clean)
-    X_test_emb = batch_encode(embedder, X_test_clean)
-    mo_hinh = LogisticRegression(max_iter=1000)
-    mo_hinh.fit(X_train_emb, y_train)
-    y_du_doan = mo_hinh.predict(X_test_emb)
-    do_chinh_xac = accuracy_score(y_test, y_du_doan)
-    bao_cao = classification_report(y_test, y_du_doan, target_names=["Không spam", "Spam"])
-    print(f"Độ chính xác của mô hình: {do_chinh_xac:.2f}")
-    print("\nBáo cáo phân loại:")
-    print(bao_cao)
-    return mo_hinh, embedder
 
 # ============================================================================
 # 3. CÁC HÀM ĐÁNH GIÁ MÔ HÌNH
@@ -99,19 +77,32 @@ def tai_mo_hinh(duong_dan_mo_hinh: str, duong_dan_embedder: str):
 
 def train_and_evaluate(duong_dan_file: str, duong_dan_mo_hinh: str, duong_dan_embedder: str):
     """Pipeline: train, test, lưu mô hình và tên model embedding."""
+    # Đọc và tiền xử lý dữ liệu
     X_train, X_test, y_train, y_test = doc_va_tien_xu_ly_du_lieu(duong_dan_file)
+    
+    # Khởi tạo SentenceTransformer
     embedder = SentenceTransformer(MODEL_NAME)
+    
+    # Tiền xử lý và encode dữ liệu
     X_train_clean = clean_text_list(X_train)
     X_test_clean = clean_text_list(X_test)
     X_train_emb = batch_encode(embedder, X_train_clean)
     X_test_emb = batch_encode(embedder, X_test_clean)
+    
+    # Huấn luyện mô hình
     mo_hinh = huan_luyen_mo_hinh(X_train_emb, y_train)
+    
+    # Đánh giá mô hình
     do_chinh_xac, bao_cao = danh_gia_mo_hinh(mo_hinh, X_test_emb, y_test)
     print(f'Độ chính xác: {do_chinh_xac:.4f}')
     print('Báo cáo phân loại:')
     print(bao_cao)
+    
+    # Lưu mô hình
     luu_mo_hinh_va_embedder(mo_hinh, duong_dan_mo_hinh, duong_dan_embedder)
     print(f'Đã lưu mô hình vào {duong_dan_mo_hinh} và tên model SentenceTransformer vào {duong_dan_embedder}')
+    
+    return mo_hinh, embedder
 
 # ============================================================================
 # 7. MAIN EXECUTION
