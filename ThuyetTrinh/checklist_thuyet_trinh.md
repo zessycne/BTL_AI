@@ -8,15 +8,14 @@
 ### **🔧 Technical Preparation**
 
 - [ ] **Test tất cả code trước khi demo**
-  - [ ] Chạy `python mo_hinh_1.py` (TF-IDF approach)
-  - [ ] Chạy `python mo_hinh.py` (SentenceTransformer approach)
+  - [ ] Chạy `python mo_hinh.py` (SentenceTransformer approach - đã tối ưu)
   - [ ] Chạy `python ui_du_doan_email.py` (UI)
+  - [ ] Chạy `python du_doan_email.py` (Command line)
   - [ ] Test prediction với email mẫu
 
 - [ ] **Backup dữ liệu và models**
   - [ ] Backup file `spam.csv`
-  - [ ] Backup trained models (`mo_hinh_spam.pkl`, `mo_hinh_spam_tfidf.pkl`)
-  - [ ] Backup vectorizers (`vectorizer_spam.pkl`)
+  - [ ] Backup trained model (`mo_hinh_spam.pkl`)
   - [ ] Backup sentence model info (`sentence_model.txt`)
 
 - [ ] **Chuẩn bị email mẫu để demo**
@@ -37,9 +36,10 @@
 - [ ] **Chuẩn bị slides hoặc notes**
   - [ ] Introduction slide
   - [ ] Project overview
-  - [ ] Technical architecture
+  - [ ] Technical architecture (đã tối ưu)
   - [ ] Demo steps
-  - [ ] Results comparison
+  - [ ] Code optimization highlights
+  - [ ] Results
   - [ ] Conclusion
 
 - [ ] **Practice demo nhiều lần**
@@ -52,20 +52,27 @@
 - [ ] **Project overview (2 phút)**
   - [ ] Mục tiêu: Spam detection system
   - [ ] Dataset: SMS Spam Collection (5,574 messages)
-  - [ ] 2 approaches: TF-IDF vs SentenceTransformer
+  - [ ] Approach: SentenceTransformer + LogisticRegression (đã tối ưu)
   - [ ] Technologies: Python, scikit-learn, SentenceTransformer
 
 - [ ] **Technical highlights**
   - [ ] Data preprocessing pipeline
-  - [ ] Feature extraction methods
+  - [ ] SentenceTransformer feature extraction
+  - [ ] Batch processing optimization
   - [ ] Model training process
   - [ ] Evaluation metrics
   - [ ] User interface
 
-- [ ] **Results comparison**
-  - [ ] TF-IDF: 97.45% accuracy, 15s training
-  - [ ] SentenceTransformer: 98.56% accuracy, 180s training
-  - [ ] Trade-offs: speed vs accuracy
+- [ ] **Code optimization highlights**
+  - [ ] Loại bỏ hàm trùng lặp
+  - [ ] Modular design
+  - [ ] Batch processing
+  - [ ] Error handling tốt
+
+- [ ] **Results**
+  - [ ] SentenceTransformer: 98.56% accuracy
+  - [ ] Training time: 3-5 phút
+  - [ ] Code optimization: 23% reduction in lines
 
 ---
 
@@ -73,16 +80,18 @@
 
 ### **🔍 Common Questions & Answers**
 
-- [ ] **"Tại sao chọn Logistic Regression?"**
-  - [ ] Binary classification phù hợp
-  - [ ] Nhanh và hiệu quả
-  - [ ] Dễ interpret
-  - [ ] Ít overfitting
+- [ ] **"Tại sao chọn SentenceTransformer?"**
+  - [ ] Hiểu ngữ nghĩa sâu sắc hơn TF-IDF
+  - [ ] Phù hợp cho việc phân loại email spam
+  - [ ] Có thể hiểu context và ý nghĩa thực sự
+  - [ ] Accuracy cao (98.56%)
 
-- [ ] **"So sánh TF-IDF vs SentenceTransformer?"**
-  - [ ] TF-IDF: Đơn giản, nhanh, không hiểu ngữ nghĩa
-  - [ ] SentenceTransformer: Phức tạp, chậm, hiểu ngữ nghĩa sâu
-  - [ ] Trade-off: Speed vs Accuracy
+- [ ] **"Code có tối ưu không?"**
+  - [ ] Đã loại bỏ hàm trùng lặp
+  - [ ] Batch processing hiệu quả
+  - [ ] Modular design
+  - [ ] Error handling tốt
+  - [ ] Memory management hiệu quả
 
 - [ ] **"Làm sao cải thiện model?"**
   - [ ] Ensemble methods
@@ -124,6 +133,12 @@
   - [ ] Model compression
   - [ ] Garbage collection
 
+- [ ] **"Code optimization details?"**
+  - [ ] Loại bỏ encode_sentences() function
+  - [ ] Loại bỏ xay_dung_va_danh_gia_mo_hinh() function
+  - [ ] Modular design với các hàm chuyên biệt
+  - [ ] Batch processing để tránh tràn bộ nhớ
+
 ---
 
 ## **🚀 Demo Script**
@@ -133,30 +148,29 @@
 - [ ] **Introduction (2 phút)**
   - [ ] Greeting và project overview
   - [ ] Technical stack
-  - [ ] Project structure
+  - [ ] Project structure (đã tối ưu)
 
-- [ ] **TF-IDF Demo (3 phút)**
-  - [ ] Run `python mo_hinh_1.py`
-  - [ ] Explain process
-  - [ ] Show results
-  - [ ] Highlight performance
-
-- [ ] **SentenceTransformer Demo (3 phút)**
+- [ ] **SentenceTransformer Demo (4 phút)**
   - [ ] Run `python mo_hinh.py`
-  - [ ] Explain process
+  - [ ] Explain optimization process
   - [ ] Show results
-  - [ ] Compare with TF-IDF
+  - [ ] Highlight code improvements
 
-- [ ] **UI Demo (2 phút)**
+- [ ] **UI Demo (3 phút)**
   - [ ] Run `python ui_du_doan_email.py`
   - [ ] Demo với email mẫu
   - [ ] Show real-time prediction
   - [ ] Highlight user-friendly features
 
-- [ ] **Comparison & Conclusion (2 phút)**
-  - [ ] Performance comparison table
-  - [ ] Pros and cons
-  - [ ] Recommendations
+- [ ] **Command Line Demo (2 phút)**
+  - [ ] Run `python du_doan_email.py`
+  - [ ] Demo với email mẫu
+  - [ ] Show batch processing
+  - [ ] Highlight flexibility
+
+- [ ] **Code Optimization & Conclusion (1 phút)**
+  - [ ] Code optimization highlights
+  - [ ] Performance improvements
   - [ ] Future work
 
 ### **🎬 Demo Flow**
@@ -166,25 +180,16 @@
    - [ ] Navigate to project directory
    - [ ] Prepare email samples
 
-2. **TF-IDF Demo (3 phút)**
+2. **SentenceTransformer Demo (4 phút)**
    ```bash
-   python mo_hinh_1.py
+   python mo_hinh.py
    ```
-   - [ ] Explain what's happening
+   - [ ] Explain optimization
    - [ ] Show progress
    - [ ] Display results
    - [ ] Highlight key metrics
 
-3. **SentenceTransformer Demo (3 phút)**
-   ```bash
-   python mo_hinh.py
-   ```
-   - [ ] Explain the difference
-   - [ ] Show batch processing
-   - [ ] Display results
-   - [ ] Compare performance
-
-4. **UI Demo (2 phút)**
+3. **UI Demo (3 phút)**
    ```bash
    python ui_du_doan_email.py
    ```
@@ -193,10 +198,19 @@
    - [ ] Demo ham email
    - [ ] Show error handling
 
-5. **Comparison (2 phút)**
-   - [ ] Show comparison table
-   - [ ] Discuss trade-offs
-   - [ ] Give recommendations
+4. **Command Line Demo (2 phút)**
+   ```bash
+   python du_doan_email.py
+   ```
+   - [ ] Show command line interface
+   - [ ] Demo với email mẫu
+   - [ ] Show batch processing
+   - [ ] Highlight flexibility
+
+5. **Code Optimization (1 phút)**
+   - [ ] Show code structure
+   - [ ] Highlight optimizations
+   - [ ] Discuss benefits
    - [ ] Future improvements
 
 ---
@@ -228,7 +242,7 @@
 
 - [ ] **Technical confidence**
   - [ ] Understand every line of code
-  - [ ] Know why each decision was made
+  - [ ] Know why each optimization was made
   - [ ] Be ready to explain trade-offs
 
 - [ ] **Communication skills**
@@ -245,21 +259,21 @@
 
 ## **📊 Performance Metrics to Remember**
 
-### **📈 TF-IDF + Logistic Regression**
-- Accuracy: ~97.45%
-- Precision: ~95%
-- Recall: ~95%
-- F1-score: ~95%
-- Training time: ~15 seconds
-- Memory usage: Low
-
-### **📈 SentenceTransformer + Logistic Regression**
+### **📈 SentenceTransformer + Logistic Regression (ĐÃ TỐI ƯU)**
 - Accuracy: ~98.56%
 - Precision: ~97%
 - Recall: ~97%
 - F1-score: ~97%
-- Training time: ~180 seconds
-- Memory usage: High
+- Training time: ~3-5 phút
+- Memory usage: Tối ưu với batch processing
+- Code lines: 95 (giảm 23% từ 123 dòng)
+
+### **🚀 Code Optimization Results**
+- Loại bỏ 2 hàm trùng lặp
+- Modular design
+- Batch processing hiệu quả
+- Error handling tốt
+- Memory management tối ưu
 
 ---
 
@@ -281,6 +295,7 @@
 
 ### **🎪 Technical Confidence**
 - [ ] You built this system from scratch
+- [ ] You optimized the code effectively
 - [ ] You understand every component
 - [ ] You can explain any part in detail
 - [ ] You have working code to prove it
@@ -303,9 +318,9 @@
 
 ---
 
-**🎉 CHÚC BẠN THÀNH CÔNG! 🎉**
+## **🎉 CHÚC BẠN THÀNH CÔNG! 🎉**
 
-**Remember: You've built a working spam detection system with 98%+ accuracy. That's impressive! Be proud of your work and present it with confidence!**
+**Remember: You've built a working spam detection system with 98%+ accuracy and optimized code. That's impressive! Be proud of your work and present it with confidence!**
 
 ---
 

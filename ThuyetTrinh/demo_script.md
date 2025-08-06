@@ -8,61 +8,24 @@
 ### **Tổng quan dự án:**
 - **Mục tiêu:** Xây dựng hệ thống tự động phân loại email spam/ham
 - **Dataset:** SMS Spam Collection Dataset (5,574 messages)
-- **Approaches:** 2 phương pháp khác nhau để so sánh hiệu quả
+- **Approach:** SentenceTransformer + LogisticRegression với code tối ưu hóa
 - **Technologies:** Python, scikit-learn, SentenceTransformer, Tkinter
 
 ### **Cấu trúc dự án:**
 ```
 DemoAI/
 ├── tien_xu_ly.py          # Data preprocessing
-├── dac_trung.py           # TF-IDF feature extraction
-├── mo_hinh.py             # SentenceTransformer approach
-├── mo_hinh_1.py           # TF-IDF approach
-├── du_doan.py             # Prediction pipeline
-└── ui_du_doan_email.py    # User interface
+├── mo_hinh.py             # Optimized model training (SentenceTransformer)
+├── du_doan_email.py       # Command line prediction
+├── ui_du_doan_email.py    # User interface
+├── spam.csv               # Dataset
+├── mo_hinh_spam.pkl       # Trained model
+└── sentence_model.txt     # SentenceTransformer model info
 ```
 
 ---
 
-## **PHẦN 2: DEMO TF-IDF APPROACH (3 phút)**
-
-### **Bước 1: Chạy training**
-```bash
-python mo_hinh_1.py
-```
-
-### **Giải thích quá trình:**
-"Đầu tiên, tôi sẽ demo approach sử dụng TF-IDF + Logistic Regression:"
-
-1. **Data preprocessing:** Đọc dữ liệu từ file CSV, xử lý encoding
-2. **Feature extraction:** Sử dụng TF-IDF với n-gram (1,2) và max_features=3000
-3. **Model training:** Logistic Regression với max_iter=1000
-4. **Evaluation:** Tính các metrics (accuracy, precision, recall, F1-score)
-
-### **Kết quả mong đợi:**
-```
-Độ chính xác: 0.9745
-Báo cáo phân loại:
-              precision    recall  f1-score   support
-
-Không spam       0.98      0.98      0.98       966
-Spam             0.95      0.95      0.95       149
-
-    accuracy                           0.97      1115
-   macro avg       0.96      0.96      0.96      1115
-weighted avg       0.97      0.97      0.97      1115
-
-Thời gian chạy: 15.23 giây
-```
-
-### **Giải thích kết quả:**
-- **Accuracy 97.45%:** Rất tốt cho bài toán spam detection
-- **Precision cao:** Ít false positive (không block nhầm email quan trọng)
-- **Training time:** Chỉ 15 giây, rất nhanh
-
----
-
-## **PHẦN 3: DEMO SENTENCETRANSFORMER APPROACH (3 phút)**
+## **PHẦN 2: DEMO SENTENCETRANSFORMER APPROACH (4 phút)**
 
 ### **Bước 1: Chạy training**
 ```bash
@@ -70,38 +33,42 @@ python mo_hinh.py
 ```
 
 ### **Giải thích quá trình:**
-"Tiếp theo, tôi sẽ demo approach sử dụng SentenceTransformer + Logistic Regression:"
+"Tôi sẽ demo approach sử dụng SentenceTransformer + LogisticRegression với code đã được tối ưu hóa:"
 
-1. **Data preprocessing:** Tương tự như trên
-2. **Feature extraction:** Sử dụng SentenceTransformer để tạo embeddings
-3. **Batch processing:** Xử lý theo batch để tránh tràn bộ nhớ
-4. **Model training:** Logistic Regression trên embeddings
-5. **Evaluation:** So sánh với TF-IDF approach
+1. **Data preprocessing:** Đọc dữ liệu từ file CSV, xử lý encoding
+2. **Text cleaning:** Làm sạch text với hàm `clean_text_list()`
+3. **Feature extraction:** Sử dụng SentenceTransformer để tạo embeddings
+4. **Batch processing:** Xử lý theo batch để tránh tràn bộ nhớ
+5. **Model training:** Logistic Regression với max_iter=1000
+6. **Evaluation:** Tính các metrics (accuracy, precision, recall, F1-score)
+7. **Model saving:** Lưu mô hình và thông tin embedder
 
 ### **Kết quả mong đợi:**
 ```
+=== Huấn luyện mô hình với SentenceTransformer ===
 Độ chính xác: 0.9856
 Báo cáo phân loại:
               precision    recall  f1-score   support
 
-Không spam       0.99      0.99      0.99       966
-Spam             0.97      0.97      0.97       149
+Không phải rác       0.99      0.99      0.99       966
+Thư rác             0.97      0.97      0.97       149
 
     accuracy                           0.99      1115
    macro avg       0.98      0.98      0.98      1115
 weighted avg       0.99      0.99      0.99      1115
 
-Thời gian chạy: 180.45 giây
+Đã lưu mô hình vào mo_hinh_spam.pkl và tên model SentenceTransformer vào sentence_model.txt
 ```
 
 ### **Giải thích kết quả:**
-- **Accuracy 98.56%:** Cao hơn TF-IDF approach
-- **Better semantic understanding:** Hiểu ngữ nghĩa sâu sắc hơn
-- **Training time:** Lâu hơn (3 phút) do phức tạp hơn
+- **Accuracy 98.56%:** Rất tốt cho bài toán spam detection
+- **Precision cao:** Ít false positive (không block nhầm email quan trọng)
+- **Training time:** Khoảng 3-5 phút, phù hợp với độ phức tạp
+- **Code tối ưu:** Đã loại bỏ các hàm trùng lặp, dễ maintain
 
 ---
 
-## **PHẦN 4: DEMO USER INTERFACE (2 phút)**
+## **PHẦN 3: DEMO USER INTERFACE (3 phút)**
 
 ### **Bước 1: Chạy UI**
 ```bash
@@ -136,96 +103,57 @@ John
 
 ---
 
-## **PHẦN 5: SO SÁNH VÀ KẾT LUẬN (2 phút)**
+## **PHẦN 4: DEMO COMMAND LINE (2 phút)**
 
-### **Bảng so sánh performance:**
+### **Bước 1: Chạy command line tool**
+```bash
+python du_doan_email.py
+```
 
-| Metric | TF-IDF + LR | SentenceTransformer + LR |
-|--------|-------------|-------------------------|
-| Accuracy | 97.45% | 98.56% |
-| Precision | 95% | 97% |
-| Recall | 95% | 97% |
-| F1-score | 95% | 97% |
-| Training time | 15s | 180s |
-| Memory usage | Thấp | Cao |
-| Interpretability | Cao | Thấp |
+### **Demo với email mẫu:**
+```
+Nhập email (gõ 'END' để kết thúc):
+> Hi, can you send me the meeting notes from yesterday?
 
-### **Ưu nhược điểm:**
+Kết quả: Không spam
 
-**TF-IDF + Logistic Regression:**
-- ✅ Nhanh, đơn giản, dễ hiểu
-- ✅ Memory efficient
-- ✅ Dễ interpret
-- ❌ Không hiểu ngữ nghĩa sâu sắc
+Nhập email (gõ 'END' để kết thúc):
+> FREE VIAGRA NOW!!! Click here to get your free pills!!!
 
-**SentenceTransformer + Logistic Regression:**
-- ✅ Hiểu ngữ nghĩa tốt hơn
-- ✅ Accuracy cao hơn
-- ✅ Xử lý được context
-- ❌ Chậm hơn, phức tạp hơn
+Kết quả: Spam
 
-### **Recommendations:**
-1. **Production:** Sử dụng SentenceTransformer cho accuracy cao
-2. **Development:** Sử dụng TF-IDF cho rapid prototyping
-3. **Resource-constrained:** TF-IDF phù hợp hơn
-4. **High-accuracy requirement:** SentenceTransformer là lựa chọn tốt
+Nhập email (gõ 'END' để kết thúc):
+> END
+```
+
+### **Giải thích:**
+- **Flexible input:** Hỗ trợ nhập email nhiều dòng
+- **Batch processing:** Xử lý hiệu quả với SentenceTransformer
+- **Clear output:** Kết quả dễ hiểu
 
 ---
 
-## **PHẦN 6: Q&A PREPARATION**
+## **PHẦN 5: CODE OPTIMIZATION HIGHLIGHTS (2 phút)**
 
-### **Câu hỏi thường gặp:**
+### **Tối ưu hóa đã thực hiện:**
 
-**Q: "Tại sao chọn Logistic Regression?"**
-A: "Logistic Regression phù hợp cho binary classification, nhanh, dễ interpret, và ít overfitting. Đặc biệt tốt cho spam detection vì chúng ta cần hiểu được feature importance."
-
-**Q: "Làm sao cải thiện model?"**
-A: "Có thể thử: 1) Ensemble methods kết hợp nhiều models, 2) Deep learning (LSTM/BERT), 3) Feature engineering tốt hơn, 4) Data augmentation, 5) Hyperparameter tuning."
-
-**Q: "Model có bias không?"**
-A: "Có thể có bias do imbalanced dataset (13% spam, 87% ham). Cần xử lý bằng: 1) Balanced sampling, 2) Diverse training data, 3) Bias detection tools."
-
-**Q: "Làm sao deploy production?"**
-A: "1) API development với Flask/FastAPI, 2) Docker containerization, 3) Cloud deployment (AWS/GCP), 4) Monitoring và logging, 5) Auto-scaling."
-
----
-
-## **PHẦN 7: TECHNICAL DETAILS**
-
-### **Code highlights:**
-
-**Data preprocessing (tien_xu_ly.py):**
+#### **1. Loại bỏ hàm trùng lặp:**
 ```python
-def doc_va_tien_xu_ly_du_lieu(duong_dan_file: str):
-    # Handle encoding issues
-    try:
-        du_lieu = pd.read_csv(duong_dan_file, encoding='utf-8')
-    except UnicodeDecodeError:
-        du_lieu = pd.read_csv(duong_dan_file, encoding='latin1')
-    
-    # Clean and prepare data
-    du_lieu = du_lieu.rename(columns={'v1': 'nhan', 'v2': 'noi_dung'})
-    du_lieu = du_lieu.dropna()
-    du_lieu['nhan'] = pd.Series(du_lieu['nhan']).astype(str).replace({'ham': 0, 'spam': 1})
-    
-    # Train/test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        du_lieu['noi_dung'], du_lieu['nhan'], 
-        test_size=0.2, random_state=42, stratify=du_lieu['nhan']
-    )
-    return X_train, X_test, y_train, y_test
+# Đã loại bỏ:
+# - encode_sentences() (trùng với batch_encode())
+# - xay_dung_va_danh_gia_mo_hinh() (trùng với train_and_evaluate())
 ```
 
-**TF-IDF feature extraction (dac_trung.py):**
+#### **2. Cấu trúc code rõ ràng:**
 ```python
-def trich_xuat_tfidf(X_train, X_test) -> Tuple[csr_matrix, csr_matrix, TfidfVectorizer]:
-    bo_tfidf = TfidfVectorizer(ngram_range=(1,2), max_features=3000)
-    X_train_tfidf = bo_tfidf.fit_transform(X_train)
-    X_test_tfidf = bo_tfidf.transform(X_test)
-    return csr_matrix(X_train_tfidf), csr_matrix(X_test_tfidf), bo_tfidf
+# Các hàm chuyên biệt:
+def huan_luyen_mo_hinh(X_train_emb, y_train):     # Chỉ huấn luyện
+def danh_gia_mo_hinh(mo_hinh, X_test_emb, y_test): # Chỉ đánh giá
+def du_doan_tin_nhan(mo_hinh, embedder, tin_nhan): # Chỉ dự đoán
+def train_and_evaluate(...):                       # Pipeline chính
 ```
 
-**SentenceTransformer approach (mo_hinh.py):**
+#### **3. Batch processing hiệu quả:**
 ```python
 def batch_encode(model, texts, batch_size=128):
     """Encode embedding theo batch nhỏ để tránh tràn bộ nhớ."""
@@ -237,16 +165,131 @@ def batch_encode(model, texts, batch_size=128):
     return np.vstack(embeddings)
 ```
 
+#### **4. Error handling tốt:**
+```python
+def clean_text_list(series):
+    return [str(s) if pd.notnull(s) and str(s).strip() != "" else "[EMPTY]" for s in series]
+```
+
 ---
 
-## **PHẦN 8: CONCLUSION**
+## **PHẦN 6: SO SÁNH VÀ KẾT LUẬN (2 phút)**
+
+### **Ưu điểm của approach hiện tại:**
+
+| Aspect | SentenceTransformer + LR |
+|--------|-------------------------|
+| Accuracy | 98.56% |
+| Precision | 97% |
+| Recall | 97% |
+| F1-score | 97% |
+| Semantic understanding | Cao |
+| Code maintainability | Cao |
+| Memory efficiency | Tốt (batch processing) |
+| Error handling | Tốt |
+
+### **Ưu nhược điểm:**
+
+**SentenceTransformer + Logistic Regression:**
+- ✅ Hiểu ngữ nghĩa tốt hơn
+- ✅ Accuracy cao (98.56%)
+- ✅ Code tối ưu, dễ maintain
+- ✅ Batch processing hiệu quả
+- ✅ Error handling tốt
+- ❌ Training time lâu hơn (3-5 phút)
+- ❌ Memory usage cao hơn
+
+### **Recommendations:**
+1. **Production:** Sử dụng approach này cho accuracy cao
+2. **Development:** Code modular dễ mở rộng
+3. **Maintenance:** Code sạch, ít trùng lặp
+4. **Performance:** Batch processing tối ưu
+
+---
+
+## **PHẦN 7: Q&A PREPARATION**
+
+### **Câu hỏi thường gặp:**
+
+**Q: "Tại sao chọn SentenceTransformer?"**
+A: "SentenceTransformer hiểu ngữ nghĩa sâu sắc hơn TF-IDF, phù hợp cho việc phân loại email spam vì có thể hiểu context và ý nghĩa thực sự của tin nhắn."
+
+**Q: "Làm sao cải thiện model?"**
+A: "Có thể thử: 1) Ensemble methods kết hợp nhiều models, 2) Deep learning (LSTM/BERT), 3) Feature engineering tốt hơn, 4) Data augmentation, 5) Hyperparameter tuning."
+
+**Q: "Code có tối ưu không?"**
+A: "Đã tối ưu bằng cách: 1) Loại bỏ hàm trùng lặp, 2) Batch processing, 3) Modular design, 4) Error handling tốt, 5) Memory management hiệu quả."
+
+**Q: "Làm sao deploy production?"**
+A: "1) API development với Flask/FastAPI, 2) Docker containerization, 3) Cloud deployment (AWS/GCP), 4) Monitoring và logging, 5) Auto-scaling."
+
+---
+
+## **PHẦN 8: TECHNICAL DETAILS**
+
+### **Code highlights:**
+
+**Optimized training pipeline (mo_hinh.py):**
+```python
+def train_and_evaluate(duong_dan_file: str, duong_dan_mo_hinh: str, duong_dan_embedder: str):
+    """Pipeline: train, test, lưu mô hình và tên model embedding."""
+    # Đọc và tiền xử lý dữ liệu
+    X_train, X_test, y_train, y_test = doc_va_tien_xu_ly_du_lieu(duong_dan_file)
+    
+    # Khởi tạo SentenceTransformer
+    embedder = SentenceTransformer(MODEL_NAME)
+    
+    # Tiền xử lý và encode dữ liệu
+    X_train_clean = clean_text_list(X_train)
+    X_test_clean = clean_text_list(X_test)
+    X_train_emb = batch_encode(embedder, X_train_clean)
+    X_test_emb = batch_encode(embedder, X_test_clean)
+    
+    # Huấn luyện mô hình
+    mo_hinh = huan_luyen_mo_hinh(X_train_emb, y_train)
+    
+    # Đánh giá mô hình
+    do_chinh_xac, bao_cao = danh_gia_mo_hinh(mo_hinh, X_test_emb, y_test)
+    
+    # Lưu mô hình
+    luu_mo_hinh_va_embedder(mo_hinh, duong_dan_mo_hinh, duong_dan_embedder)
+    
+    return mo_hinh, embedder
+```
+
+**Efficient batch processing:**
+```python
+def batch_encode(model, texts, batch_size=128):
+    """Encode embedding theo batch nhỏ để tránh tràn bộ nhớ."""
+    embeddings = []
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i:i+batch_size]
+        emb = model.encode(batch, show_progress_bar=False)
+        embeddings.append(emb)
+    return np.vstack(embeddings)
+```
+
+**Modular prediction function:**
+```python
+def du_doan_tin_nhan(mo_hinh, embedder, tin_nhan: str):
+    """Dự đoán một tin nhắn/email là spam hay không spam."""
+    tin_nhan_clean = clean_text_list([tin_nhan])
+    tin_nhan_emb = batch_encode(embedder, tin_nhan_clean)
+    du_doan = mo_hinh.predict(tin_nhan_emb)[0]
+    return "Spam" if du_doan == 1 else "Không spam"
+```
+
+---
+
+## **PHẦN 9: CONCLUSION**
 
 ### **Tóm tắt:**
-- ✅ Xây dựng thành công hệ thống spam detection
-- ✅ So sánh 2 approaches khác nhau
-- ✅ Đạt accuracy cao (97-99%)
-- ✅ Có user interface thân thiện
-- ✅ Code modular và maintainable
+- ✅ Xây dựng thành công hệ thống spam detection với accuracy 98.56%
+- ✅ Code tối ưu hóa, loại bỏ trùng lặp, dễ maintain
+- ✅ Batch processing hiệu quả, tránh tràn bộ nhớ
+- ✅ User interface thân thiện
+- ✅ Error handling tốt
+- ✅ Modular design cho dễ mở rộng
 
 ### **Future work:**
 - Ensemble methods
